@@ -1,0 +1,23 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t muntax/rect-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true muntax/react-test npm test
+
+after_success:
+  - docker build -t muntax/multi-client ./client
+  - docker build -t muntax/multi-nginx ./nginx
+  - docker build -t muntax/multi-server ./server
+  - docker build -t muntax/multi-worker ./worker
+    #Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    #take those images and push them to docker hub
+  - docker push muntax/multi-client
+  - docker push muntax/multi-nginx
+  - docker push muntax/multi-server
+  - docker push muntax/multi-worker
