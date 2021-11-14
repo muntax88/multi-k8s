@@ -1,0 +1,7 @@
+FROM node:14.14.0-alpine
+WORKDIR "/app"
+COPY ./package.json ./
+RUN npm install
+COPY . .
+#start command has to be included in package.json file
+CMD ["npm","run","start"]
